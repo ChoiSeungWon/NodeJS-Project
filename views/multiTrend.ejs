@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Dashboard Template for Bootstrap</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+          #chartdiv {
+          width	: 100%;
+          height	: 500px;
+          }
+          body {
+          padding-top: 50px;
+          }
+          .sub-header {
+          padding-bottom: 10px;
+          border-bottom: 1px solid #eee;
+          }
+
+          .navbar-fixed-top {
+          border: 0;
+          }
+
+          .sidebar {
+          display: none;
+          }
+          @media (min-width: 768px) {
+          .sidebar {
+            position: fixed;
+            top: 51px;
+            bottom: 0;
+            left: 0;
+            z-index: 1000;
+            display: block;
+            padding: 20px;
+            overflow-x: hidden;
+            overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+            background-color: #f5f5f5;
+            border-right: 1px solid #eee;
+          }
+          }
+
+          /* Sidebar navigation */
+          .nav-sidebar {
+          margin-right: -21px; /* 20px padding + 1px border */
+          margin-bottom: 20px;
+          margin-left: -20px;
+          }
+          .nav-sidebar > li > a {
+          padding-right: 20px;
+          padding-left: 20px;
+          }
+          .nav-sidebar > .active > a,
+          .nav-sidebar > .active > a:hover,
+          .nav-sidebar > .active > a:focus {
+          color: #fff;
+          background-color: #428bca;
+          }
+
+          .main {
+          padding: 20px;
+          }
+          @media (min-width: 768px) {
+          .main {
+            padding-right: 40px;
+            padding-left: 40px;
+          }
+          }
+          .main .page-header {
+          margin-top: 0;
+          }
+
+          .placeholders {
+          margin-bottom: 30px;
+          text-align: center;
+          }
+          .placeholders h4 {
+          margin-bottom: 0;
+          }
+          .placeholder {
+          margin-bottom: 20px;
+          }
+          .placeholder img {
+          display: inline-block;
+          border-radius: 50%;
+          }
+          .input-group-addon {
+            font-size: 11.5px;
+            width: 100px;
+          }
+    </style>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+    <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+    <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+    <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+
+    <script>
+  $(document).ready(function(){
+
+    var dateStart;
+    var dateEnd;
+      $('#search').click(function(){
+        if($('#dateStart').val() ===  '' || $('#timeStart').val() === '' || $('#dateEnd').val() === '' || $('#timeEnd').val() === ''){
+          alert("조회기간 입력 해주세요.");
+          return false;
+        }
+         dateStart = $('#dateStart').val(); var timeStart = $('#timeStart').val();  dateEnd = $('#dateEnd').val(); var timeEnd = $('#timeEnd').val();
+         var strArray = dateStart.split('-'); var timeArray = timeStart.split(':'); var strArray1 = dateEnd.split('-'); var timeArray1 = timeEnd.split(':');
+        dateStart = ''; dateEnd = ''; timeStart = ''; timeEnd = '';
+        for(var i = 0; i < strArray.length; i++){
+            dateStart += strArray[i];
+            dateEnd += strArray1[i];
+        }
+        if(timeArray.length === 2){
+          for(var i = 0; i < timeArray.length; i++){
+              timeStart += timeArray[i];
+          }
+          timeStart += '00';
+        }else{
+          for(var i = 0; i < timeArray.length; i++){
+              timeStart += timeArray[i];
+          }
+        }
+        if(timeArray1.length === 2){
+          for(var i = 0; i < timeArray1.length; i++){
+              timeEnd += timeArray1[i];
+          }
+          timeEnd += '00';
+        }else{
+          for(var i = 0; i < timeArray1.length; i++){
+              timeEnd += timeArray1[i];
+          }
+        }
+        dateStart += '_'+timeStart;
+        dateEnd += '_'+timeEnd;
+        console.log(dateStart+','+dateEnd);
+        productId_ajax(dateStart, dateEnd);
+      });
+
+      function productId_ajax(dateStart,dateEnd){
+        $.ajax({
+          url: 'http://10.10.30.88:3000/productId_ajax',
+          dataType: 'json',
+          type: 'POST',
+          data: {
+            'dateStart' : dateStart,
+            'dateEnd' : dateEnd
+          },
+          success: function(result){
+            var products = result['products'];
+            tagAppend(products);
+          }
+        });
+      }
+
+      function tagAppend(products){
+        console.log(products);
+        $('#tab').find('li').not(':first').remove();
+        for(var i = 0; i < products.length; i++){
+          $('<li><a href="#" data-toggle="tab" class="product">'+products[i].PRODUCT_ID+'</a></li>').appendTo('#tab');
+        }
+      }
+
+      $(document).on('click', '.product',function(event){
+        event.preventDefault();
+        var product_id = $(this).text();
+        $('#productID').html(product_id+' Multi Trend');
+        $('#productId').val(product_id);
+        console.log(product_id);
+        ajax1(dateStart,dateEnd,product_id);
+        ajax2(dateStart,dateEnd,product_id);
+      });
+
+
+      function ajax1(dateStart,dateEnd,product_id){
+        $.ajax({
+          url: 'http://10.10.30.88:3000/totalAjax',
+          dataType: 'json',
+          type: 'POST',
+          data: {
+            'dateStart' : dateStart,
+            'dateEnd' : dateEnd,
+            'product_id' : product_id
+          },
+          success: function(result){
+            var GLS_Pre_Goods = result['GLS_Pre_Goods'];
+            var total = result['total'];
+            console.log(GLS_Pre_Goods[0]); console.log(total[0]);
+
+           $('#id').val(total[0]['e_DFT_Count']);
+            deviceInfo(total[0]);
+            //-> 양품율 Trend 메소드 실행
+            preGoodChart(GLS_Pre_Goods);
+          }
+        });
+      }
+
+      function ajax2(dateStart,dateEnd,product_id){
+        $.ajax({
+          url: 'http://10.10.30.88:3000/trendAjax',
+          dataType: 'json',
+          type: 'POST',
+          data: {
+            'dateStart' : dateStart,
+            'dateEnd' : dateEnd,
+            'product_id' : product_id
+          },
+          success: function(result){
+            var rj = result['RJ'];
+            var rp = result['RP'];
+            //->rj Trend 메소드 실행 ,->rp Trend 메소드 실행
+           colorSet(rp);
+           colorSet(rj);
+
+           rjTrend(rj);
+           rpTrend(rp);
+          }
+        });
+      }
+
+      function deviceInfo(arr3){
+          var total = arr3['totalPnl_Count'];
+          if(total != 0){
+            var test = (1- (arr3['t_p_n_Count']/total))*100;
+            var reject = (arr3['t_p_n_Count']/total)*100;
+            var good = (arr3['t_e_Count']/total)*100;
+            var repair = (1 - (arr3['r_p_n_Count']/arr3['rTotalPnl_Count']))*100;
+            $('#totalPanel').val(total);
+            $('#test').val(test.toFixed(2)+'%');
+            $('#reject').val(reject.toFixed(2)+'%');
+            $('#good').val(good.toFixed(2)+'%');
+            $('#repair').val(repair.toFixed(2)+'%');
+            $('#ok').val(arr3['e_DFT_Count']);
+            $('#rp').val(arr3['p_DFT_Count']);
+            $('#rj').val(arr3['n_DFT_Count']);
+        }else{
+          $('#totalPanel').val(total);
+          $('#test').val('0%');
+          $('#reject').val('0%');
+          $('#good').val('0%');
+          $('#repair').val('0%');
+          $('#ok').val(arr3['e_DFT_Count']);
+          $('#rp').val(arr3['p_DFT_Count']);
+          $('#rj').val(arr3['n_DFT_Count']);
+        }
+      }
+
+      function preGoodChart(data){
+        AmCharts.makeChart("chartdiv1",
+            {
+              "type": "serial",
+              "categoryField": "GLS_ID",
+              "handDrawThickness": 3,
+              "theme": "default",
+              // "categoryAxis": {
+              //   "minPeriod": "MM",
+              //   "parseDates": true
+              // },
+              "chartCursor": {
+                // "enabled": true,
+                //커서 데이터 포맷
+                "categoryBalloonDateFormat": "GLS_ID",
+                //커서 마우스
+                 "cursorPosition": "mouse"
+              },
+              "chartScrollbar": {
+                "enabled": true
+              },
+              "trendLines": [],
+              "graphs": [
+                {
+                  //텍스트 표시
+                  "balloonText": "<b>Good: [[value]]%</b>",
+                  //차트 데이터값 모양(원,사각,세모)
+                  "bullet": "square",
+                  //그래프 색
+              //    "color": "#FF0F00",
+                  "id": "AmGraph-1",
+                  "labelOffset": -1,
+                  "maxBulletSize": 49,
+                  "minBulletSize": 1,
+                  "negativeBase": -2,
+                  //그래프 이름
+                  "title": "Good",
+                  //변수필드
+                  "valueField": "GLSID_Pre_Good"
+                },
+                {
+                  "balloonText": "<b>Reject: [[value]]%</b>",
+                  "bullet": "round",
+                  "id": "AmGraph-2",
+                  "title": "Reject",
+                  "valueField": "PNL_Rj"
+                },
+                {
+                  "balloonText": "<b>Repair: [[value]]%</b>",
+                  "bullet": "square",
+                  "id": "AmGraph-3",
+                  "title": "Repair",
+                  "valueField": "PNL_Rp"
+                }
+              ],
+              "guides": [],
+              "valueAxes": [
+                {
+                  "axisFrequency": 0,
+                  "id": "ValueAxis-1",
+                  "unit": "%",
+                  "maximum": 100,
+                  "minimum": 0,
+                  "autoRotateCount": 0,
+                  "title": "GLS_ID 별 Yield",
+                  "titleRotation": 1
+                }
+              ],
+              "allLabels": [],
+              "balloon": {
+                "animationDuration": 0
+              },
+              //그래프 표시:중앙,데이터값 표시
+              "legend": {
+                "align" : "center",
+                "enabled": true,
+                "useGraphSettings": true,
+                "valueText" : '[[value]]%',
+                "labelText" : '[[title]]'
+              },
+              //차트 제목
+              "titles": [
+                {
+                  "id": "Title-1",
+                  "size": 15,
+                  "text": "Glass 별 Yield"
+                }
+              ],
+              //->download,print 활성화
+              "export": {
+                "enabled": true
+              },
+              "dataProvider": data
+            });
+      }
+
+      function colorSet(data){
+        for(var i=0; i<data.length; i++){
+          if(data[i]['CODE_COUNT'] < 250 ){
+            data[i].color = "#0D52D1"
+          }else if(data[i]['CODE_COUNT'] >=250 && data[i]['CODE_COUNT'] <= 350){
+            data[i].color = "#8A0CCF"
+          }else if(data[i]['CODE_COUNT'] > 350 && data[i]['CODE_COUNT'] <= 450){
+            data[i].color = "#B0DE09";
+          }else if(data[i]['CODE_COUNT'] > 450){
+              data[i].color = "#FF0F00"
+          }
+        }
+      }
+
+      function rjTrend(data){
+      var rjChart = AmCharts.makeChart("chartdiv3", {
+          "type": "serial",
+          "theme": "light",
+          "marginRight": 70,
+          "titles":[
+            {
+              "id": "Title-1",
+              "size": 15,
+              "text": "RJ Trend"
+            }],
+          "dataProvider": data,
+          "valueAxes": [{
+            "axisAlpha": 0,
+            "position": "left",
+            "title": "N 판정 PNL DEFECT_COUNT"
+          }],
+          "startDuration": 1,
+          "graphs": [{
+            "balloonText": "<b>[[category]]: [[value]]개</b>",
+            "fillColorsField": "color",
+            "fillAlphas": 0.9,
+            "lineAlpha": 0.2,
+            "type": "column",
+            "valueField": "CODE_COUNT"
+          }],
+          "chartCursor": {
+            "categoryBalloonEnabled": false,
+            "cursorAlpha": 0,
+            "zoomable": false
+          },
+          "categoryField": "DEFECT_CODE",
+          "categoryAxis": {
+            "gridPosition": "start",
+            "labelRotation": 45
+          },
+          "export": {
+            "enabled": true
+          }
+        });
+
+        rjChart.addListener("clickGraphItem", rjHandleClick)
+      }
+
+      function rpTrend(data){
+      var rpChart = AmCharts.makeChart("chartdiv4",
+          {
+            "type": "serial",
+            "categoryField": "DEFECT_CODE",
+            "startDuration": 1,
+            "categoryAxis": {
+              "gridPosition": "start"
+            },
+            "chartCursor": {
+              "enabled": true
+            },
+            "chartScrollbar": {
+              "enabled": true
+            },
+            "trendLines": [],
+            "graphs": [
+              {
+                "balloonText": "<b>[[category]]: [[value]]개</b>",
+                "fillColorsField": "color",
+                "fillAlphas": 1,
+                "id": "AmGraph-1",
+                "title": "graph 1",
+                "type": "column",
+                "valueField": "CODE_COUNT"
+              }
+            ],
+            "guides": [],
+            "valueAxes": [
+              {
+                "id": "ValueAxis-1",
+                "title": "P 판정 PNL DEFECT_COUNT"
+              }
+            ],
+            "allLabels": [],
+            "balloon": {},
+            "titles": [
+              {
+                "id": "Title-1",
+                "size": 15,
+                "text": "RP Trend"
+              }
+            ],
+            "export": {
+              "enabled": true
+            },
+            "dataProvider": data
+        });
+        rpChart.addListener("clickGraphItem", rpHandleClick)
+
+      }
+
+      function rjHandleClick(event){
+        $('#productId').on(function(){
+          this.defaultValue = this.value;
+        });
+        var code = event['item']['category'];
+        var productId = $('#productId').val();
+        console.log(productId);
+        console.log(code);
+        if(code != ''){
+          var f = document.createElement('form');
+          f.setAttribute('method', 'post');
+          f.setAttribute('action', '/rjTrend');
+
+          var input1= document.createElement('input');  var input2= document.createElement('input');
+          var input3= document.createElement('input');  var input4= document.createElement('input');
+
+          input1.setAttribute('type', 'hidden'); input2.setAttribute('type', 'hidden');
+          input3.setAttribute('type', 'hidden');  input4.setAttribute('type', 'hidden');
+
+          input1.setAttribute('name', 'dateStart');  input2.setAttribute('name', 'dateEnd');
+          input3.setAttribute('name', 'code'); input4.setAttribute('name', 'productId');
+
+
+          input1.setAttribute('value', dateStart);  input2.setAttribute('value', dateEnd);
+          input3.setAttribute('value', code); input4.setAttribute('value', productId);
+
+           f.appendChild(input1); f.appendChild(input2);  f.appendChild(input3);
+           f.appendChild(input4);
+           f.submit();
+        }else{
+
+        }
+
+      }
+
+      function rpHandleClick(event){
+        $('#productId').on(function(){
+          this.defaultValue = this.value;
+        });
+        var code = event['item']['category'];
+        var productId = $('#productId').val();
+        console.log(productId);
+        //
+        if(code != ''){
+          var f = document.createElement('form');
+          f.setAttribute('method', 'post');
+          f.setAttribute('action', '/rpTrend');
+
+          var input1= document.createElement('input');
+          var input2= document.createElement('input');
+          var input3= document.createElement('input');
+          var input4= document.createElement('input');
+
+          input1.setAttribute('type', 'hidden');
+          input2.setAttribute('type', 'hidden');
+          input3.setAttribute('type', 'hidden');
+          input4.setAttribute('type', 'hidden');
+
+          input1.setAttribute('name', 'dateStart');
+          input2.setAttribute('name', 'dateEnd');
+          input3.setAttribute('name', 'code');
+          input4.setAttribute('name', 'productId');
+
+
+          input1.setAttribute('value', dateStart);
+          input2.setAttribute('value', dateEnd);
+          input3.setAttribute('value', code);
+          input4.setAttribute('value', productId);
+
+           f.appendChild(input1);
+           f.appendChild(input2);
+           f.appendChild(input3);
+           f.appendChild(input4);
+
+           f.submit();
+        }else{
+
+        }
+      }
+
+
+  });
+  </script>
+
+  </head>
+
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="/">Multi Trend Chart</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/rtms">RTMS</a></li>
+            <li><a href="/">Multi Trend</a></li>
+          </ul>
+          <form class="navbar-form navbar-right">
+            <input type="text" class="form-control" id="email" value = "<%= user %>" readonly>
+            <button type="button" class="btn btn-primary" id="logout" onclick="location.href='/logout'">로그아웃</button>
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <input text="hidden" id="productId" value="">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <br/><br/>
+          <ul class="nav nav-sidebar">
+            <li class="active"><a href="#" id='productID'>ProductID Info </a></li>
+          </ul>
+          <div class="input-group">
+            <span class="input-group-addon" id="sizing-addon1">PANEL진행량</span>
+            <input type="text" class="form-control" aria-describedby="sizing-addon1" id="totalPanel" >
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon" id="sizing-addon2">Test 수율</span>
+            <input type="text" class="form-control"  aria-describedby="sizing-addon1" id="test" >
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon" id="sizing-addon3">Reject율</span>
+            <input type="text" class="form-control"  aria-describedby="sizing-addon1" id="reject"  >
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon" id="sizing-addon4">Pre-good율</span>
+            <input type="text" class="form-control"  aria-describedby="sizing-addon1" id="good" >
+          </div>
+
+          <!-- <div class="input-group">
+            <span class="input-group-addon" id="sizing-addon5">Repair성공율</span>
+            <input type="text" class="form-control"  aria-describedby="sizing-addon1" id="repair" >
+          </div> -->
+          <div class="input-group">
+            <span class="input-group-addon" id="sizing-addon6">Ok판정DFT수</span>
+            <input type="text" class="form-control"  aria-describedby="sizing-addon1" id="ok"  >
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon" id="sizing-addon1">RJ판정DFT수</span>
+            <input type="text" class="form-control"  aria-describedby="sizing-addon1" id="rj"  >
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon" id="sizing-addon1">RP판정DFT수</span>
+            <input type="text" class="form-control"  aria-describedby="sizing-addon1" id="rp" >
+          </div>
+
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+          <p>기간 조회: <input type="date" name="dateStart" id="dateStart" value="2016-10-22"><input type="time" name="timeStart" id="timeStart" step=3 value="02:12:25">
+            ~ <input type="date" name="dateEnd" id="dateEnd" value="2016-11-20"><input type="time" name="timeEnd" id="timeEnd" step=3 value="06:15:27">
+            <input type="button" class="btn btn-primary" id="search" value="조회">
+          </p>
+
+          <div class="row placeholders">
+            <ul class="nav nav-tabs" id="tab">
+              <li><a href="#home" data-toggle="tab">Product별 Tab</a></li>
+            </ul>
+          </div>
+
+          <div class="row placeholders">
+              <div id="chartdiv1" style="width: 100%; height: 400px; background-color: #FFFFFF;" ></div>
+          </div>
+          <div class="row placeholders">
+            <div class="col-xs-6 placeholder">
+              <div id="chartdiv3" style="width: 100%; height: 400px; background-color: #FFFFFF;" ></div>
+
+            </div>
+            <div class="col-xs-6 placeholder">
+              <div id="chartdiv4" style="width: 100%; height: 400px; background-color: #FFFFFF;" ></div>
+
+            </div>
+          </div>
+
+
+      </div>
+    </div>
+
+
+
+  </body>
+</html>

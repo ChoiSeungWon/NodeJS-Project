@@ -1,0 +1,292 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+	<title>각 지역 평균 기온과 평균 강수량</title>
+	<link rel="stylesheet" href="http://fonts.googleapis.com/earlyaccess/nanumgothic.css">
+	<style>
+		* {
+			font-family: 'Nanum Gothic';
+		}
+
+		.chart {
+			margin: 70px auto;
+			width: 90%;
+			height: 500px;
+		}
+	</style>
+</head>
+<body>
+
+	<div id="temperature-chart" class="chart"></div>
+
+	<div id="rainfall-chart" class="chart"></div>
+
+	<script src="js/jquery-1.8.3.min.js"></script>	<!-- jQuery -->
+	<script src="js/amcharts/amcharts.js"></script>	<!-- amCharts -->
+	<script>
+		// [1] 각 지역 평균 기온
+		// 이 데모의 원본 샘플은 http://www.amcharts.com/javascript-charts/smoothed-line/ 입니다.
+		(function () {
+
+			var chart;
+			var graph;
+
+			// 실제 차트를 그리는 부분
+			$(function () {
+
+				// 먼저 차트를 만듭니다.
+				createChart();
+
+				// ajax로 데이터를 받아와서 차트에 데이터를 업데이트 합니다.
+				$.getJSON('data/temperature.json', function (data) {
+					chart.dataProvider = data;
+	            	chart.validateData();
+				});
+
+			});
+
+			// this method is called when chart is first inited as we listen for "dataUpdated" event
+			function zoomChart() {
+			    // different zoom methods can be used - zoomToIndexes, zoomToDates, zoomToCategoryValues
+			    chart.zoomToDates(new Date(2010, 11), new Date(2012, 0));
+			}
+
+			function createChart() {
+			    // SERIAL CHART
+			    chart = new AmCharts.AmSerialChart();
+			    chart.addTitle("각 지역 평균 기온", 24);
+			    chart.pathToImages = "js/amcharts/images/";
+			    chart.autoMargins = false;
+			    chart.marginLeft = 0;
+			    chart.marginRight = 0;
+			    chart.marginBottom = 25;
+			    chart.marginTop = 20;
+			    chart.zoomOutText = '전체기간 보기';
+			    chart.categoryField = "month";
+			    chart.zoomOutButton = {
+			        backgroundColor: '#000000',
+			        backgroundAlpha: 0.15
+			    };
+
+			    // listen for "dataUpdated" event (fired when chart is inited) and call zoomChart method when it happens
+			    chart.addListener("dataUpdated", zoomChart);
+
+			    // AXES
+			    // category
+			    var categoryAxis = chart.categoryAxis;
+			    categoryAxis.parseDates = true; // as our data is date-based, we set parseDates to true
+			    categoryAxis.minPeriod = "MM"; // our data is yearly, so we set minPeriod to YYYY
+			    categoryAxis.dateFormats = [{period:'MM',format:'M월'},{period:'YYYY',format:'YYYY년'}];
+			    categoryAxis.gridAlpha = 0;
+
+			    // value
+			    var valueAxis = new AmCharts.ValueAxis();
+			    valueAxis.axisAlpha = 0;
+			    valueAxis.inside = true;
+			    valueAxis.unit = '℃';
+			    chart.addValueAxis(valueAxis);
+
+			    // legend
+			    var legend = new AmCharts.AmLegend();
+			    legend.align = 'center';
+			    legend.valueText = '[[value]]℃';
+				chart.addLegend(legend);
+
+			    // CURSOR
+			    var chartCursor = new AmCharts.ChartCursor();
+			    chartCursor.cursorPosition = "mouse";
+			    chartCursor.categoryBalloonDateFormat = "YYYY.MM";
+			    chartCursor.pan = true;
+			    chart.addChartCursor(chartCursor);
+
+			    // GRAPH - 서울
+			    graph = new AmCharts.AmGraph();
+			    graph.type = "smoothedLine"; // this line makes the graph smoothed line.
+			    graph.title = '서울';
+			    graph.lineColor = "#d1655d";
+			    graph.negativeLineColor = "#d1655d"; // this line makes the graph to change color when it drops below 0
+			    graph.bullet = "round";
+			    graph.bulletSize = 5;
+			    graph.lineThickness = 2;
+			    graph.valueField = "seoul";
+			    graph.balloonText = "서울: [[value]]℃";
+			    chart.addGraph(graph);
+
+			    // GRAPH - 부산
+			    graph = new AmCharts.AmGraph();
+			    graph.type = "smoothedLine"; // this line makes the graph smoothed line.
+			    graph.title = '부산';
+			    graph.lineColor = "#637bb6";
+			    graph.negativeLineColor = "#637bb6"; // this line makes the graph to change color when it drops below 0
+			    graph.bullet = "round";
+			    graph.bulletSize = 5;
+			    graph.lineThickness = 2;
+			    graph.valueField = "busan";
+			    graph.balloonText = "부산: [[value]]℃";
+			    chart.addGraph(graph);
+
+			    // GRAPH - 광주
+			    graph = new AmCharts.AmGraph();
+			    graph.type = "smoothedLine"; // this line makes the graph smoothed line.
+			    graph.title = '광주';
+			    graph.lineColor = "#d1cf2a";
+			    graph.negativeLineColor = "#d1cf2a"; // this line makes the graph to change color when it drops below 0
+			    graph.bullet = "round";
+			    graph.bulletSize = 5;
+			    graph.lineThickness = 2;
+			    graph.valueField = "gwangju";
+			    graph.balloonText = "광주: [[value]]℃";
+			    chart.addGraph(graph);
+
+			    // SCROLLBAR
+			    var chartScrollbar = new AmCharts.ChartScrollbar();
+			    chartScrollbar.graph = graph;
+			    chartScrollbar.backgroundColor = "#DDDDDD";
+			    chartScrollbar.scrollbarHeight = 30;
+			    chartScrollbar.selectedBackgroundColor = "#FFFFFF";
+			    chart.addChartScrollbar(chartScrollbar);
+
+			    // WRITE
+			    chart.write("temperature-chart");
+			}
+
+		})();
+
+
+
+		// [2] 각 지역 평균 강수량
+		// 이 데모의 원본 샘플은 http://www.amcharts.com/javascript-charts/3d-stacked-column/ 입니다.
+		(function () {
+
+			var chart;
+			var graph;
+
+			// 실제 차트를 그리는 부분
+			$(function () {
+
+				// 먼저 차트를 만듭니다.
+				createChart();
+
+				// ajax로 데이터를 받아와서 차트에 데이터를 업데이트 합니다.
+				$.getJSON('data/rainfall.json', function (data) {
+					chart.dataProvider = data;
+	            	chart.validateData();
+				});
+
+			});
+
+			// this method is called when chart is first inited as we listen for "dataUpdated" event
+			function zoomChart() {
+			    // different zoom methods can be used - zoomToIndexes, zoomToDates, zoomToCategoryValues
+			    chart.zoomToDates(new Date(2010, 11), new Date(2012, 0));
+			}
+
+			function createChart() {
+			    // SERIAL CHART
+			    chart = new AmCharts.AmSerialChart();
+			    chart.addTitle("각 지역 평균 강수량", 24);
+			    chart.pathToImages = "js/amcharts/images/";
+			    chart.autoMargins = false;
+			    chart.marginLeft = 0;
+			    chart.marginRight = 0;
+			    chart.marginBottom = 25;
+			    chart.marginTop = 20;
+			    chart.zoomOutText = '전체기간 보기';
+			    chart.categoryField = "month";
+			    chart.zoomOutButton = {
+			        backgroundColor: '#000000',
+			        backgroundAlpha: 0.15
+			    };
+				chart.plotAreaFillAlphas = 0.2;
+				// the following two lines makes chart 3D
+				chart.angle = 30;
+				chart.depth3D = 40;
+
+				// listen for "dataUpdated" event (fired when chart is inited) and call zoomChart method when it happens
+			    chart.addListener("dataUpdated", zoomChart);
+
+			    // AXES
+			    // category
+			    var categoryAxis = chart.categoryAxis;
+			    categoryAxis.parseDates = true; // as our data is date-based, we set parseDates to true
+			    categoryAxis.minPeriod = "MM"; // our data is yearly, so we set minPeriod to YYYY
+			    categoryAxis.dateFormats = [{period:'MM',format:'M월'},{period:'YYYY',format:'YYYY년'}];
+			    categoryAxis.gridAlpha = 0.2;
+	    		categoryAxis.gridPosition = "start";
+				categoryAxis.axisColor = "#DADADA";
+	    		categoryAxis.axisAlpha = 1;
+	    		categoryAxis.dashLength = 5;
+
+			    // value
+			    var valueAxis = new AmCharts.ValueAxis();
+			    valueAxis.inside = true;
+			    valueAxis.unit = 'mm';
+			    valueAxis.stackType = "3d"; // This line makes chart 3D stacked (columns are placed one behind another)
+			    valueAxis.gridAlpha = 0.2;
+			    valueAxis.axisColor = "#DADADA";
+			    valueAxis.axisAlpha = 1;
+			    valueAxis.dashLength = 5;
+			    chart.addValueAxis(valueAxis);
+
+			    // legend
+			    var legend = new AmCharts.AmLegend();
+			    legend.align = 'center';
+			    legend.valueText = '[[value]]mm';
+				chart.addLegend(legend);
+
+				// CURSOR
+			    var chartCursor = new AmCharts.ChartCursor();
+			    chartCursor.cursorPosition = "mouse";
+			    chartCursor.categoryBalloonDateFormat = "YYYY.MM";
+			    chartCursor.pan = true;
+			    chart.addChartCursor(chartCursor);
+
+			    // GRAPH - 서울
+			    graph = new AmCharts.AmGraph();
+			    graph.type = "column"; // this line makes the graph smoothed line.
+			    graph.title = '서울';
+			    graph.lineAlpha = 0;
+			    graph.lineColor = "#d1655d";
+			    graph.fillAlphas = 1;
+			    graph.valueField = "seoul";
+			    graph.balloonText = "서울: [[value]]mm";
+			    chart.addGraph(graph);
+
+
+			    // GRAPH - 부산
+			    graph = new AmCharts.AmGraph();
+			    graph.type = "column"; // this line makes the graph smoothed line.
+			    graph.title = '부산';
+			    graph.lineAlpha = 0;
+			    graph.lineColor = "#637bb6";
+			    graph.fillAlphas = 1;
+			    graph.valueField = "busan";
+			    graph.balloonText = "부산: [[value]]mm";
+			    chart.addGraph(graph);
+
+			    // GRAPH - 광주
+			    graph = new AmCharts.AmGraph();
+			    graph.type = "column"; // this line makes the graph smoothed line.
+			    graph.title = '광주';
+			    graph.lineAlpha = 0;
+			    graph.lineColor = "#d1cf2a";
+			    graph.fillAlphas = 1;
+			    graph.valueField = "gwangju";
+			    graph.balloonText = "광주: [[value]]mm";
+			    chart.addGraph(graph);
+
+			    // SCROLLBAR
+			    var chartScrollbar = new AmCharts.ChartScrollbar();
+			    chartScrollbar.graph = graph;
+			    chartScrollbar.backgroundColor = "#DDDDDD";
+			    chartScrollbar.scrollbarHeight = 30;
+			    chartScrollbar.selectedBackgroundColor = "#FFFFFF";
+			    chart.addChartScrollbar(chartScrollbar);
+
+			    // WRITE
+			    chart.write("rainfall-chart");
+			}
+
+		})();
+	</script>

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Reject DEFECT CODE Trend & Viewer</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+          #chartdiv {
+          width	: 100%;
+          height	: 500px;
+          }
+          body {
+          padding-top: 50px;
+          }
+          .sub-header {
+          padding-bottom: 10px;
+          border-bottom: 1px solid #eee;
+          }
+
+          .navbar-fixed-top {
+          border: 0;
+          }
+
+          .sidebar {
+          display: none;
+          }
+          @media (min-width: 768px) {
+          .sidebar {
+            position: fixed;
+            top: 51px;
+            bottom: 0;
+            left: 0;
+            z-index: 1000;
+            display: block;
+            padding: 20px;
+            overflow-x: hidden;
+            overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+            background-color: #f5f5f5;
+            border-right: 1px solid #eee;
+          }
+          }
+
+          /* Sidebar navigation */
+          .nav-sidebar {
+          margin-right: -21px; /* 20px padding + 1px border */
+          margin-bottom: 20px;
+          margin-left: -20px;
+          }
+          .nav-sidebar > li > a {
+          padding-right: 20px;
+          padding-left: 20px;
+          }
+          .nav-sidebar > .active > a,
+          .nav-sidebar > .active > a:hover,
+          .nav-sidebar > .active > a:focus {
+          color: #fff;
+          background-color: #428bca;
+          }
+
+          .main {
+          padding: 20px;
+          }
+          @media (min-width: 768px) {
+          .main {
+            padding-right: 40px;
+            padding-left: 40px;
+          }
+          }
+          .main .page-header {
+          margin-top: 0;
+          }
+
+          .placeholders {
+          margin-bottom: 30px;
+          text-align: center;
+          }
+          .placeholders h4 {
+          margin-bottom: 0;
+          }
+          .placeholder {
+          margin-bottom: 20px;
+          }
+          .placeholder img {
+          display: inline-block;
+          border-radius: 50%;
+          }
+          .input-group-addon {
+            font-size: 11.5px;
+            width: 100px;
+          }
+    </style>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+    <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+    <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+    <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+
+    <script>
+
+    function ajax1(dateStart,dateEnd,code,productId){
+      $.ajax({
+        url: 'http://10.10.30.88:3000/rjCodeAjax',
+        dataType: 'json',
+        type: 'POST',
+        data: {
+          'dateStart' : dateStart,
+          'dateEnd' : dateEnd,
+          'code' : code,
+          'productId' : productId
+        },
+        success: function(result){
+            defectInfo(result['rjCodeDate']);
+            defectCodeDate(result['rjCodeDate'],code);
+        }
+      });
+    }
+    function defectInfo(rjCodeDate){
+        var sum = 0;
+        for(var i = 0; i < rjCodeDate.length; i++){
+          sum += parseInt(rjCodeDate[i]['DEFECT']);
+        }
+       $('#test').val(sum);
+    }
+    function defectCodeDate(rjCodeDate,code){
+    var rjCodeChart =  AmCharts.makeChart("chartdiv1",
+          {
+            "type": "serial",
+            "categoryField": "END_TIME",
+            "handDrawThickness": 3,
+            "theme": "default",
+            // "categoryAxis": {
+            //   "minPeriod": "MM",
+            //   "parseDates": true
+            // },
+            "chartCursor": {
+              // "enabled": true,
+              //커서 데이터 포맷
+              "categoryBalloonDateFormat": "END_TIME",
+              //커서 마우스
+               "cursorPosition": "mouse"
+            },
+            "chartScrollbar": {
+              "enabled": true
+            },
+            "trendLines": [],
+            "graphs": [
+              {
+                //텍스트 표시
+                "balloonText": "<b>"+code+": [[value]]개</b>",
+                //차트 데이터값 모양(원,사각,세모)
+                "bullet": "square",
+                //그래프 색
+            //    "color": "#FF0F00",
+                "id": "AmGraph-1",
+                "labelOffset": -1,
+                "maxBulletSize": 49,
+                "minBulletSize": 1,
+                "negativeBase": -2,
+                //그래프 이름
+                "title": code,
+                //변수필드
+                "valueField": "DEFECT"
+              }
+            ],
+            "guides": [],
+            "valueAxes": [
+              {
+                "axisAlpha": 0,
+                "position": "left",
+                "title": "Defect Code: "+code
+              }
+            ],
+            "allLabels": [],
+            "balloon": {
+              "animationDuration": 0
+            },
+            //그래프 표시:중앙,데이터값 표시
+            "legend": {
+              "align" : "center",
+              "enabled": true,
+              "useGraphSettings": true,
+              "valueText" : '[[value]]',
+              "labelText" : '[[title]]'
+            },
+            //차트 제목
+            "titles": [
+              {
+                "id": "Title-1",
+                "size": 15,
+                "text": "DEFECT CODE : "+code
+              }
+            ],
+            //->download,print 활성화
+            "export": {
+              "enabled": true
+            },
+            "dataProvider": rjCodeDate
+          });
+          rjCodeChart.addListener('clickGraphItem', rjHandleClick);
+    }
+
+    function rjHandleClick(event){
+      var dateEnd = event['item']['category'];
+      var code = $('#code').val();
+       if(dateEnd && code){
+         ajax2(code,dateEnd);
+       }
+    }
+    function ajax2(code,dateEnd){
+      $.ajax({
+        url: 'http://10.10.30.88:3000/rpImageAjax',
+        dataType: 'json',
+        type: 'POST',
+        data: {
+          'dateEnd' : dateEnd,
+          'code' : code
+        },
+        success: function(result){
+            var rpCodeImages = result['rpCodeImages'];
+            imagePath(rpCodeImages);
+        }
+      });
+
+      function imagePath(rpCodeImages){
+        var imagePath = [];
+        for(var i = 0; i < rpCodeImages.length; i++){
+          var path = 'image\\cell\\'+rpCodeImages[i]['IMAGE1'].substring(15,19)+'\\'+rpCodeImages[i]['IMAGE1'].substring(0,4)+'\\'+
+          rpCodeImages[i]['IMAGE1'].substring(4,6)+'\\'+rpCodeImages[i]['IMAGE1'].substring(6,8)+'\\'+rpCodeImages[i]['IMAGE1'].substring(8,10)+'\\'
+          +rpCodeImages[i]['IMAGE1'].substring(10,12)+'\\'+rpCodeImages[i]['IMAGE1'];
+          imagePath.push(path);
+        }
+        imageTagAppend(imagePath,rpCodeImages);
+      }
+    }
+
+    function imageTagAppend(imagePath,rpCodeImages){
+      console.log(imagePath);
+      $('#images').find('li').remove();
+      for(var i = 0; i < imagePath.length; i++){
+        $('<li><img alt="PNL_ID: '+rpCodeImages[i]['PNL_ID']+', DEFECT_CODE: '+rpCodeImages[i]['DEFECT_CODE']+
+        ', DEFECT_POS: '+rpCodeImages[i]['DEFECT_POS']+'" src="'+imagePath[i]+'"><div class="text">COOR_X: '+rpCodeImages[i]['COOR_X']+
+        ', COOR_Y: '+rpCodeImages[i]['COOR_Y']+', MURA_LA: '+rpCodeImages[i]['MURA_LV']+'</div></li>').appendTo('#images');
+      }
+      $('ul.first').bsPhotoGallery({
+      "classes" : "col-lg-2 col-md-4 col-sm-3 col-xs-4 col-xxs-12",
+      "hasModal" : true,
+      // "fullHeight" : false
+    });
+    }
+
+
+  </script>
+
+  </head>
+
+<body>
+
+      <script>
+      $(document).ready(function() {
+  // Handler for .ready() called.
+          ajax1('<%= dateStart%>', '<%= dateEnd%>', '<%= code%>', '<%= productId%>');
+        });
+
+      </script>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Multi Trend Chart</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="/rtms">RTMS</a></li>
+            <li><a href="/">Multi Trend</a></li>
+          </ul>
+          <form class="navbar-form navbar-right">
+            <input type="text" class="form-control" id="email" value = "<%= user %>" readonly>
+            <button type="button" class="btn btn-primary" id="logout" onclick="location.href='/logout'">로그아웃</button>
+        </form>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <br/>
+          <br/>
+          <ul class="nav nav-sidebar">
+            <li class="active"><a href="#">DEFECT CODE : <%= code%> <span class="sr-only">(current)</span></a></li>
+          </ul>
+          <div class="input-group">
+            <span class="input-group-addon" id="sizing-addon1">Defect code</span>
+            <input type="text" class="form-control" aria-describedby="sizing-addon1" id="code" value="<%= code%>">
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon" id="sizing-addon2">Defect Count</span>
+            <input type="text" class="form-control"  aria-describedby="sizing-addon1" id="test" value="" >
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon" id="sizing-addon3">검색 시작</span>
+            <input type="text" class="form-control"  aria-describedby="sizing-addon1" id="reject" value="<%= dateStart%>" >
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon" id="sizing-addon4">검색 종료일</span>
+            <input type="text" class="form-control"  aria-describedby="sizing-addon1" id="good" value="<%= dateEnd%>" >
+          </div>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+
+
+        <div class="row placeholders">
+            <div id="chartdiv1" style="width: 100%; height: 400px; background-color: #FFFFFF;" ></div>
+        </div>
+
+        <div class="container">
+          <div class="row" style="text-align:center; border-bottom:1px dashed #ccc;  padding:0 0 20px 0; margin-bottom:40px;">
+              <h3 style="font-family:'Bree Serif', arial; font-weight:bold; font-size:30px;">
+                  <a style="text-decoration:none; color:#666;" href="#">Reject Defect Code<span style="color:red;"> Image viewer</span></a>
+              </h3>
+          </div>
+        <ul class="row first" id ="images">
+       </ul>
+     </div>
+
+
+
+      </div>
+    </div>
+    <script src="js\jquery.bsPhotoGallery.js"></script>
+    <link href="css\jquery.bsPhotoGallery.css" rel="stylesheet">
+  </body>
+</html>

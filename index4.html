@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>chart created with amCharts | amCharts</title>
+		<meta name="description" content="chart created using amCharts live editor" />
+		<style>
+		#chartdiv2 {
+			width: 100%;
+			height: 500px;
+		}
+
+		.amcharts-export-menu-top-right {
+			top: 10px;
+			right: 0;
+		}
+		</style>
+		<!-- amCharts javascript sources -->
+		<script type="text/javascript" src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+		<script type="text/javascript" src="https://www.amcharts.com/lib/3/serial.js"></script>
+		<link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+		<script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+		<script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+
+		<!-- amCharts javascript code -->
+		<script type="text/javascript">
+		var chart =	AmCharts.makeChart("chartdiv",
+				{
+					"type": "serial",
+					"categoryField": "date",
+					"dataDateFormat": "YYYY-MM",
+					"handDrawThickness": 3,
+					"theme": "default",
+					"categoryAxis": {
+						"minPeriod": "MM",
+						"parseDates": true
+					},
+					"chartCursor": {
+						// "enabled": true,
+						"categoryBalloonDateFormat": "MMM YYYY",
+						 "cursorPosition": "mouse"
+					},
+					"chartScrollbar": {
+						"enabled": true
+					},
+					"trendLines": [],
+					"graphs": [
+						{
+							"bullet": "round",
+							"color": "#FFFFFF",
+							"id": "AmGraph-1",
+							"labelOffset": -1,
+							"maxBulletSize": 49,
+							"minBulletSize": 1,
+							"negativeBase": -2,
+							"title": "graph 1",
+							"valueField": "column-1"
+						},
+						{
+							"bullet": "square",
+							"id": "AmGraph-2",
+							"title": "graph 2",
+							"valueField": "column-2"
+						},
+						{
+              "bullet": "square",
+							"id": "AmGraph-3",
+							"title": "graph 3",
+							"valueField": "column-3"
+						}
+					],
+					"guides": [],
+					"valueAxes": [
+						{
+							"axisFrequency": 0,
+							"id": "ValueAxis-1",
+              "unit": "%",
+							"maximum": 100,
+							"minimum": 0,
+							"autoRotateCount": 0,
+							"title": "RATE",
+							"titleRotation": 1,
+							"position": "left"
+						}
+						// ,{
+						// 	"axisFrequency": 0,
+						// 	"id": "ValueAxis-2",
+						// 	"unit": "%",
+						// 	"maximum": 100,
+						// 	"minimum": 0,
+						// 	"autoRotateCount": 0,
+						// 	"title": "RATE",
+						// 	"titleRotation": 1
+						// 	"position": "right"
+						// }
+					],
+					"allLabels": [],
+					"balloon": {
+						"animationDuration": 0
+					},
+					"legend": {
+						"enabled": true,
+						"useGraphSettings": true
+    			},
+					"titles": [
+						{
+							"id": "Title-1",
+							"size": 15,
+							"text": "Chart Title"
+						},
+						{
+							"id": "Title-2"
+						}
+					],
+					"dataProvider": [
+						{
+							"date": "2014-01",
+							"column-1": 85,
+							"column-2": 55,
+							"column-3": 60
+						},
+						{
+							"date": "2014-02",
+							"column-1": 56,
+							"column-2": 66,
+							"column-3": 77
+						},
+						{
+							"date": "2014-03",
+							"column-1": 74,
+							"column-2": 98,
+							"column-3": 57
+						},
+						{
+							"date": "2014-04",
+							"column-1": 87,
+							"column-2": 53,
+							"column-3": 66
+						},
+						{
+							"date": "2014-05",
+							"column-1": 82,
+							"column-2": 61,
+							"column-3": 72
+						},
+						{
+							"date": "2014-06",
+							"column-1": 53,
+							"column-2": 32,
+							"column-3": 64
+						},
+						{
+							"date": "2014-07",
+							"column-1": 76,
+							"column-2": 58,
+							"column-3": 61
+						},
+						{
+							"date": "2014-08",
+							"column-1": 66,
+							"column-2": 57,
+							"column-3": 77
+						},
+						{
+							"date": "2014-09",
+							"column-1": 88,
+							"column-2": 93,
+							"column-3": 46
+						},
+						{
+							"date": "2014-10",
+							"column-1": 29,
+							"column-2": 37,
+							"column-3": 47
+						},
+						{
+							"date": "2014-11",
+							"column-1": 50,
+							"column-2": 50,
+							"column-3": 50
+						},
+						{
+							"date": "2014-12",
+							"column-1": 99,
+							"column-2": 50,
+							"column-3": 19
+						}
+					]
+				});
+
+				AmCharts.makeChart("chartdiv1",
+					{
+						"type": "serial",
+						"categoryField": "category",
+						"startDuration": 1,
+						"categoryAxis": {
+							"gridPosition": "start"
+						},
+						"chartCursor": {
+							"enabled": true
+						},
+						"chartScrollbar": {
+							"enabled": true
+						},
+						"trendLines": [],
+						"graphs": [
+							{
+								"fillAlphas": 1,
+								"id": "AmGraph-1",
+								"title": "graph 1",
+								"type": "column",
+								"valueField": "column-1"
+							}
+						],
+						"guides": [],
+						"valueAxes": [
+							{
+								"id": "ValueAxis-1",
+								"title": "Axis title"
+							}
+						],
+						"allLabels": [],
+						"balloon": {},
+						"titles": [
+							{
+								"id": "Title-1",
+								"size": 15,
+								"text": "Chart Title"
+							}
+						],
+						"dataProvider": [
+							{
+								"category": "category 1",
+								"column-1": 8
+
+							},
+							{
+								"category": "category 2",
+								"column-1": 16
+							},
+							{
+								"category": "category 3",
+								"column-1": 2
+							},
+							{
+								"category": "category 4",
+								"column-1": 7
+							},
+							{
+								"category": "category 5",
+								"column-1": 5
+							},
+							{
+								"category": "category 6",
+								"column-1": 9
+							},
+							{
+								"category": "category 7",
+								"column-1": 4
+							},
+							{
+								"category": "category 8",
+								"column-1": 15
+							},
+							{
+								"category": "category 9",
+								"column-1": 12
+							}
+						]
+					}
+				);
+
+				var chart = AmCharts.makeChart("chartdiv2", {
+				  "type": "serial",
+				  "theme": "light",
+				  "marginRight": 70,
+				  "dataProvider": [{
+				    "country": "USA",
+				    "visits": 3025,
+				    "color": "#FF0F00"
+				  }, {
+				    "country": "China",
+				    "visits": 1882,
+				    "color": "#FF6600"
+				  }, {
+				    "country": "Japan",
+				    "visits": 1809,
+				    "color": "#FF9E01"
+				  }, {
+				    "country": "Germany",
+				    "visits": 1322,
+				    "color": "#FCD202"
+				  }, {
+				    "country": "UK",
+				    "visits": 1122,
+				    "color": "#F8FF01"
+				  }, {
+				    "country": "France",
+				    "visits": 1114,
+				    "color": "#B0DE09"
+				  }, {
+				    "country": "India",
+				    "visits": 984,
+				    "color": "#04D215"
+				  }, {
+				    "country": "Spain",
+				    "visits": 711,
+				    "color": "#0D8ECF"
+				  }, {
+				    "country": "Netherlands",
+				    "visits": 665,
+				    "color": "#0D52D1"
+				  }, {
+				    "country": "Russia",
+				    "visits": 580,
+				    "color": "#2A0CD0"
+				  }, {
+				    "country": "South Korea",
+				    "visits": 443,
+				    "color": "#8A0CCF"
+				  }, {
+				    "country": "Canada",
+				    "visits": 441,
+				    "color": "#CD0D74"
+				  }],
+				  "valueAxes": [{
+				    "axisAlpha": 0,
+				    "position": "left",
+				    "title": "Visitors from country"
+				  }],
+				  "startDuration": 1,
+				  "graphs": [{
+				    "balloonText": "<b>[[category]]: [[value]]</b>",
+				    "fillColorsField": "color",
+				    "fillAlphas": 0.9,
+				    "lineAlpha": 0.2,
+				    "type": "column",
+				    "valueField": "visits"
+				  }],
+				  "chartCursor": {
+				    "categoryBalloonEnabled": false,
+				    "cursorAlpha": 0,
+				    "zoomable": false
+				  },
+				  "categoryField": "country",
+				  "categoryAxis": {
+				    "gridPosition": "start",
+				    "labelRotation": 45
+				  },
+				  "export": {
+				    "enabled": true
+				  }
+
+				});
+
+
+
+		</script>
+	</head>
+	<body>
+		<div id="chartdiv" style="width: 100%; height: 400px; background-color: #FFFFFF;" ></div>
+		<div id="chartdiv1" style="width: 100%; height: 400px; background-color: #FFFFFF;" ></div>
+		<!-- HTML -->
+		<div id="chartdiv2"></div>
+	</body>
+</html>

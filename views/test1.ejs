@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Dashboard Template for Bootstrap</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+          #chartdiv {
+          width	: 100%;
+          height	: 500px;
+          }
+          body {
+          padding-top: 50px;
+          }
+          .sub-header {
+          padding-bottom: 10px;
+          border-bottom: 1px solid #eee;
+          }
+
+          .navbar-fixed-top {
+          border: 0;
+          }
+
+          .sidebar {
+          display: none;
+          }
+          @media (min-width: 768px) {
+          .sidebar {
+            position: fixed;
+            top: 51px;
+            bottom: 0;
+            left: 0;
+            z-index: 1000;
+            display: block;
+            padding: 20px;
+            overflow-x: hidden;
+            overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+            background-color: #f5f5f5;
+            border-right: 1px solid #eee;
+          }
+          }
+
+          /* Sidebar navigation */
+          .nav-sidebar {
+          margin-right: -21px; /* 20px padding + 1px border */
+          margin-bottom: 20px;
+          margin-left: -20px;
+          }
+          .nav-sidebar > li > a {
+          padding-right: 20px;
+          padding-left: 20px;
+          }
+          .nav-sidebar > .active > a,
+          .nav-sidebar > .active > a:hover,
+          .nav-sidebar > .active > a:focus {
+          color: #fff;
+          background-color: #428bca;
+          }
+
+          .main {
+          padding: 20px;
+          }
+          @media (min-width: 768px) {
+          .main {
+            padding-right: 40px;
+            padding-left: 40px;
+          }
+          }
+          .main .page-header {
+          margin-top: 0;
+          }
+
+          .placeholders {
+          margin-bottom: 30px;
+          text-align: center;
+          }
+          .placeholders h4 {
+          margin-bottom: 0;
+          }
+          .placeholder {
+          margin-bottom: 20px;
+          }
+          .placeholder img {
+          display: inline-block;
+          border-radius: 50%;
+          }
+          .input-group-addon {
+            font-size: 11.5px;
+            width: 100px;
+          }
+          .portfolio .thumbnail {
+    position: relative;
+}
+
+.portfolio .thumbnail:hover {
+    cursor: pointer;
+}
+
+.portfolio .caption {
+    bottom: 0;
+    position: absolute;
+}
+
+.portfolio .btn {
+    opacity: 0.75;
+}
+
+    </style>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+    <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+    <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+    <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+    <script>
+
+    function ajax1(dateStart,dateEnd,code,productId){
+      $.ajax({
+        url: 'http://10.10.30.88:3000/rpCodeAjax',
+        dataType: 'json',
+        type: 'POST',
+        data: {
+          'dateStart' : dateStart,
+          'dateEnd' : dateEnd,
+          'code' : code,
+          'productId' : productId
+        },
+        success: function(result){
+            console.log(result);
+            console.log(result['rpCodeDate']);
+            console.log(result['rpCodeDefects'].length);
+            defectInfo(result['rpCodeDefects']);
+            defectCodeDate(result['rpCodeDate'],code);
+        }
+      });
+    }
+    function defectInfo(rpCodeDefects){
+        console.log(rpCodeDefects);
+        $('#test').val(rpCodeDefects.length);
+    }
+    function defectCodeDate(rpCodeDate,code){
+    var rpCodeChart = AmCharts.makeChart("chartdiv1",
+          {
+            "type": "serial",
+            "categoryField": "END_TIME",
+            "handDrawThickness": 3,
+            "theme": "default",
+            // "categoryAxis": {
+            //   "minPeriod": "MM",
+            //   "parseDates": true
+            // },
+            "chartCursor": {
+              // "enabled": true,
+              //커서 데이터 포맷
+              "categoryBalloonDateFormat": "END_TIME",
+              //커서 마우스
+               "cursorPosition": "mouse"
+            },
+            "chartScrollbar": {
+              "enabled": true
+            },
+            "trendLines": [],
+            "graphs": [
+              {
+                //텍스트 표시
+                "balloonText": "<b>"+code+": [[value]]개</b>",
+                //차트 데이터값 모양(원,사각,세모)
+                "bullet": "square",
+                //그래프 색
+            //    "color": "#FF0F00",
+                "id": "AmGraph-1",
+                "labelOffset": -1,
+                "maxBulletSize": 49,
+                "minBulletSize": 1,
+                "negativeBase": -2,
+                //그래프 이름
+                "title": code,
+                //변수필드
+                "valueField": "DEFECT"
+              }
+            ],
+            "guides": [],
+            "valueAxes": [
+              {
+                "axisAlpha": 0,
+                "position": "left",
+                "title": "Defect Code: "+code
+              }
+            ],
+            "allLabels": [],
+            "balloon": {
+              "animationDuration": 0
+            },
+            //그래프 표시:중앙,데이터값 표시
+            "legend": {
+              "align" : "center",
+              "enabled": true,
+              "useGraphSettings": true,
+              "valueText" : '[[value]]',
+              "labelText" : '[[title]]'
+            },
+            //차트 제목
+            "titles": [
+              {
+                "id": "Title-1",
+                "size": 15,
+                "text": "DEFECT CODE : "+code
+              }
+            ],
+            //->download,print 활성화
+            "export": {
+              "enabled": true
+            },
+            "dataProvider": rpCodeDate
+          });
+
+          rpCodeChart.addListener('clickGraphItem', rpCodeHandleClick);
+    }
+  function rpCodeHandleClick(event){
+    var code = event['item']['category'];
+    console.log(code);
+  }
+  window.onload = function(){
+  $('ul.first').bsPhotoGallery({
+  "classes" : "col-lg-2 col-md-4 col-sm-3 col-xs-4 col-xxs-12",
+  "hasModal" : true,
+  // "fullHeight" : false
+});
+}
+  $(document).ready(function(){
+
+
+
+  });
+
+  </script>
+
+  </head>
+
+<body>
+
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Multi Trend Chart</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">RTMS</a></li>
+            <li><a href="#">Multi Trend</a></li>
+          </ul>
+          <form class="navbar-form navbar-right">
+            <button type="button" class="btn btn-primary" id="logout" onclick="location.href='/logout'">로그아웃</button>
+          </form>
+          <!-- <div class="navbar-form navbar-right">
+            <input type="text" id="id" class="form-control" readonly>
+            <button type="button" class="btn btn-primary" id="logout">로그아웃</button>
+          </div> -->
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <br/>
+
+
+          <div class="input-group">
+            <span class="input-group-addon" id="sizing-addon2">Defect Count</span>
+            <input type="text" class="form-control"  aria-describedby="sizing-addon1" id="test" value="" >
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon" id="sizing-addon3">Reject율</span>
+            <input type="text" class="form-control"  aria-describedby="sizing-addon1" id="reject" value="12.90%" >
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon" id="sizing-addon4">Pre-good율</span>
+            <input type="text" class="form-control"  aria-describedby="sizing-addon1" id="good" value="06.81%" >
+          </div>
+
+          <div class="input-group">
+            <span class="input-group-addon" id="sizing-addon5">Repair성공율</span>
+            <input type="text" class="form-control"  aria-describedby="sizing-addon1" id="repair" value="79.33%" >
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon" id="sizing-addon6">Ok판정DFT수</span>
+            <input type="text" class="form-control"  aria-describedby="sizing-addon1" id="ok" value="00.00%" >
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon" id="sizing-addon1">RJ판정DFT수</span>
+            <input type="text" class="form-control"  aria-describedby="sizing-addon1" id="rj" value="2,970" >
+          </div>
+          <div class="input-group">
+            <span class="input-group-addon" id="sizing-addon1">RP판정DFT수</span>
+            <input type="text" class="form-control"  aria-describedby="sizing-addon1" id="rp" value="483" >
+          </div>
+
+          <ul class="nav nav-sidebar">
+            <li><a href="">Nav item again</a></li>
+
+          </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+
+          <div class="container">
+                <div class="row" style="text-align:center; border-bottom:1px dashed #ccc;  padding:0 0 20px 0; margin-bottom:40px;">
+                    <h3 style="font-family:'Bree Serif', arial; font-weight:bold; font-size:30px;">
+                        <a style="text-decoration:none; color:#666;" href="http://michaelsoriano.com/create-a-responsive-photo-gallery-with-bootstrap-framework/">Bootstrap Photo Gallery jQuery plugin <span style="color:red;">Demo</span></a>
+                    </h3>
+                    <p>Resize your browser and watch the gallery adapt to the view port size. Clicking on an image will activate the Modal. Click <strong><a style="color:red" href="http://michaelsoriano.com/create-a-responsive-photo-gallery-with-bootstrap-framework/">Here</a></strong> to go back to the tutorial</p>
+                </div>
+
+                <ul class="row first">
+                    <li>
+                        <img alt="Rocking the night away"  src="http://demo.michaelsoriano.com/images/photodune-174908-rocking-the-night-away-xs.jpg">
+                        <div class="text">Consectetur adipiscing elit</div>
+                    </li>
+                    <li>
+                        <img alt="Yellow sign"  src="http://demo.michaelsoriano.com/images/photodune-287182-blah-blah-blah-yellow-road-sign-xs.jpg">
+                        <div class="text">Lorem ipsum dolor sit amet, labore et dolore magna aliqua. Ut enim ad minim veniam</div>
+                    </li>
+                    <li>
+                        <img alt="Colors"  src="http://demo.michaelsoriano.com/images/photodune-460760-colors-xs.jpg">
+                         <div class="text">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.</div>
+                    </li>
+                    <li>
+                        <img alt="Retro party"  src="http://demo.michaelsoriano.com/images/photodune-461673-retro-party-xs.jpg">
+                        <div class="text">Lorem, do eiusmod tempor incid Ut enim ad minim veniam</div>
+                    </li>
+                    <li>
+                        <img alt="Technology soup"  src="http://demo.michaelsoriano.com/images/photodune-514834-touchscreen-technology-xs.jpg">
+                        <div class="text">Do eiusmod tempor</div>
+                    </li>
+                    <li>
+                        <img alt="Legal docs"  src="http://demo.michaelsoriano.com/images/photodune-916206-legal-xs.jpg" data-bsp-large-src="http://demo.michaelsoriano.com/images/photodune-916206-legal-large.jpg">
+                        <div class="text">Eiusmod tempor enim ad minim veniam</div>
+                    </li>
+                    <li>
+                        <img alt="Nature shot"  src="http://demo.michaelsoriano.com/images/photodune-1062948-nature-xs.jpg">
+                        <div class="text">Adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</div>
+                    </li>
+                    <li>
+                        <img alt="Kid with camera" src="http://demo.michaelsoriano.com/images/photodune-1471528-insant-camera-kid-xs.jpg" data-bsp-large-src="http://demo.michaelsoriano.com/images/photodune-1471528-insant-camera-kid-large.jpg">
+                        <div class="text">Lorem ipsum dolor sit amet, labore et dolore magna aliqua. Ut enim ad minim veniam</div>
+                    </li>
+                    <li>
+                        <img alt="Relax and Chill" src="http://demo.michaelsoriano.com/images/photodune-2255072-relaxed-man-xs.jpg">
+                        <div class="text">Eiusmod tempor enim ad minim veniam</div>
+                    </li>
+                    <li>
+                        <img alt="Cool colors" src="http://demo.michaelsoriano.com/images/photodune-2360379-colors-xs.jpg">
+                        <div class="text">Consectetur adipiscing elit</div>
+                    </li>
+                    <li>
+                        <img alt="Jump over"  src="http://demo.michaelsoriano.com/images/photodune-2360571-jump-xs.jpg">
+                        <div class="text">Lorem ipsum dolor sit amet, labore et dolore magna aliqua. Ut enim ad minim veniam</div>
+                    </li>
+                    <li>
+                        <img alt="Culture business" src="http://demo.michaelsoriano.com/images/photodune-2361384-culture-for-business-xs.jpg">
+                        <div class="text">Adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</div>
+                    </li>
+
+              <li>
+                  <img alt="Spaghetti bitch" src="http://demo.michaelsoriano.com/images/photodune-2441670-spaghetti-with-tuna-fish-and-parsley-s.jpg">
+                  <div class="text">Lorem ipsum dolor sit amet, labore et dolore magna aliqua. Ut enim ad minim veniam</div>
+              </li>
+              <li>
+                  <img alt="Budget this"  src="http://demo.michaelsoriano.com/images/photodune-2943363-budget-xs.jpg">
+                  <div class="text">Adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</div>
+              </li>
+              <li>
+                  <img alt="Street art"  src="http://demo.michaelsoriano.com/images/photodune-3444921-street-art-xs.jpg">
+                  <div class="text">Consectetur adipiscing elit, re magna aliqua. Ut enim ad minim veniam</div>
+              </li>
+
+
+              <li>
+                  <img alt="Insurance and stuff"  src="http://demo.michaelsoriano.com/images/photodune-3552322-insurance-xs.jpg">
+                  <div class="text">Ut enim ad minim veniam</div>
+              </li>
+
+              <li>
+                  <img alt="Food Explosion"  src="http://demo.michaelsoriano.com/images/photodune-3807845-food-s.jpg">
+                  <div class="text">Eiusmod tempor enim ad minim veniam</div>
+              </li>
+              <li>
+                  <img alt="Office worker sad" src="http://demo.michaelsoriano.com/images/photodune-3835655-down-office-worker-xs.jpg">
+                  <div class="text">Ut enim ad minim veniam</div>
+              </li>
+
+              <li>
+                  <img alt="" src="http://demo.michaelsoriano.com/images/photodune-4619216-ui-control-knob-regulators-xs.jpg">
+                  <div class="text">Do eiusmod tempor</div>
+              </li>
+
+              <li>
+                  <img alt="Health" src="http://demo.michaelsoriano.com/images/photodune-5771958-health-xs.jpg">
+                  <div class="text">Lorem ipsum dolor sit amet, labore et dolore magna aliqua. Ut enim ad minim veniam</div>
+              </li>
+              <li>
+                  <img  alt="Constant consecutuir" src="http://demo.michaelsoriano.com/images/photodune-268693-businesswoman-using-laptop-outdoors-xs.jpg"><!--no alt tag-->
+                  <div class="text">Consectetur adipiscing elit, re magna aliqua. Ut enim ad minim veniam</div>
+              </li>
+              <li>
+                  <img alt="Search code" src="http://demo.michaelsoriano.com/images/photodune-352207-search-of-code-s.jpg">
+                  <div class="text">Adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</div>
+              </li>
+
+              <li>
+                  <img alt="Pountac" src="http://demo.michaelsoriano.com/images/photodune-247190-secret-email-xs.jpg"><!--no alt tag, no text-->
+                  <div class="text">Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old.</div>
+              </li>
+            <li>
+                <img alt="Budget again" src="http://demo.michaelsoriano.com/images/photodune-2943363-budget-xs.jpg">
+                <div class="text">Adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam</div>
+            </li>
+            <li>
+                <img alt="Some alt tag" src="http://demo.michaelsoriano.com/images/photodune-3444921-street-art-xs.jpg"><!--no alt-->
+                <div class="text">Consectetur adipiscing elit, re magna aliqua. Ut enim ad minim veniam</div>
+            </li>
+            <li>
+                <img alt="Insurance boy"  src="http://demo.michaelsoriano.com/images/photodune-3552322-insurance-xs.jpg">
+                <div class="text">Ut enim ad minim veniam</div>
+            </li>
+            <li>
+                <img alt="Food service"  src="http://demo.michaelsoriano.com/images/photodune-3807845-food-s.jpg">
+                <div class="text">Eiusmod tempor enim ad minim veniam</div>
+            </li>
+            <li>
+                <img alt="Dopamine high"  src="http://demo.michaelsoriano.com/images/photodune-3835655-down-office-worker-xs.jpg">
+                <div class="text">Ut enim ad minim veniam</div>
+            </li>
+
+          </ul>
+
+
+
+
+            </div> <!-- /container -->
+
+
+          <!-- <div class="row placeholders">
+            <ul class="nav nav-tabs">
+              <li><a href="#home" data-toggle="tab">Product별 Tab</a></li>
+              <li><a href="#profile" data-toggle="tab">133WG5TP01</a></li>
+              <li><a href="#messages" data-toggle="tab">153WG5TP01</a></li>
+              <li><a href="#settings" data-toggle="tab">243WG5TP01</a></li>
+              <li><a href="#settings" data-toggle="tab">533WG5TP01</a></li>
+            </ul>
+          </div> -->
+          <!-- <h3 class="page-header">Dashboard</h3> -->
+          <!-- <p>기간 조회: <input type="datetime-local" name="datetime-local" value="2016-03-05T02:55"> ~ <input type="datetime-local" name="datetime-local"> </p> -->
+          <!-- <p>기간 조회: <input type="date" name="dateStart" id="dateStart" value="2016-11-06"><input type="time" name="timeStart" id="timeStart" step=3 value="02:12:25">
+            ~ <input type="date" name="dateEnd" id="dateEnd" value="2016-11-20"><input type="time" name="timeEnd" id="timeEnd" step=3 value="06:15:27">
+            <input type="button" class="btn btn-primary" id="search" value="조회">
+          </p> -->
+        <div class="row placeholders">
+            <div id="chartdiv1" style="width: 100%; height: 400px; background-color: #FFFFFF;" ></div>
+        </div>
+
+
+
+
+          <div class="row placeholders">
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Label</h4>
+              <span class="text-muted">Something else</span>
+            </div>
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Label</h4>
+              <span class="text-muted">Something else</span>
+            </div>
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Label</h4>
+              <span class="text-muted">Something else</span>
+            </div>
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <img data-src="holder.js/200x200/auto/vine" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Label</h4>
+              <span class="text-muted">Something else</span>
+            </div>
+
+        </div>
+
+
+    <div class="row placeholders">
+          <h2 class="sub-header">Section title</h2>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Header</th>
+                  <th>Header</th>
+                  <th>Header</th>
+                  <th>Header</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1,001</td>
+                  <td>Lorem</td>
+                  <td>ipsum</td>
+                  <td>dolor</td>
+                  <td>sit</td>
+                </tr>
+                <tr>
+                  <td>1,002</td>
+                  <td>amet</td>
+                  <td>consectetur</td>
+                  <td>adipiscing</td>
+                  <td>elit</td>
+                </tr>
+                <tr>
+                  <td>1,003</td>
+                  <td>Integer</td>
+                  <td>nec</td>
+                  <td>odio</td>
+                  <td>Praesent</td>
+                </tr>
+                <tr>
+                  <td>1,003</td>
+                  <td>libero</td>
+                  <td>Sed</td>
+                  <td>cursus</td>
+                  <td>ante</td>
+                </tr>
+                <tr>
+                  <td>1,004</td>
+                  <td>dapibus</td>
+                  <td>diam</td>
+                  <td>Sed</td>
+                  <td>nisi</td>
+                </tr>
+                <tr>
+                  <td>1,005</td>
+                  <td>Nulla</td>
+                  <td>quis</td>
+                  <td>sem</td>
+                  <td>at</td>
+                </tr>
+                <tr>
+                  <td>1,006</td>
+                  <td>nibh</td>
+                  <td>elementum</td>
+                  <td>imperdiet</td>
+                  <td>Duis</td>
+                </tr>
+                <tr>
+                  <td>1,007</td>
+                  <td>sagittis</td>
+                  <td>ipsum</td>
+                  <td>Praesent</td>
+                  <td>mauris</td>
+                </tr>
+                <tr>
+                  <td>1,008</td>
+                  <td>Fusce</td>
+                  <td>nec</td>
+                  <td>tellus</td>
+                  <td>sed</td>
+                </tr>
+                <tr>
+                  <td>1,009</td>
+                  <td>augue</td>
+                  <td>semper</td>
+                  <td>porta</td>
+                  <td>Mauris</td>
+                </tr>
+                <tr>
+                  <td>1,010</td>
+                  <td>massa</td>
+                  <td>Vestibulum</td>
+                  <td>lacinia</td>
+                  <td>arcu</td>
+                </tr>
+                <tr>
+                  <td>1,011</td>
+                  <td>eget</td>
+                  <td>nulla</td>
+                  <td>Class</td>
+                  <td>aptent</td>
+                </tr>
+                <tr>
+                  <td>1,012</td>
+                  <td>taciti</td>
+                  <td>sociosqu</td>
+                  <td>ad</td>
+                  <td>litora</td>
+                </tr>
+                <tr>
+                  <td>1,013</td>
+                  <td>torquent</td>
+                  <td>per</td>
+                  <td>conubia</td>
+                  <td>nostra</td>
+                </tr>
+                <tr>
+                  <td>1,014</td>
+                  <td>per</td>
+                  <td>inceptos</td>
+                  <td>himenaeos</td>
+                  <td>Curabitur</td>
+                </tr>
+                <tr>
+                  <td>1,015</td>
+                  <td>sodales</td>
+                  <td>ligula</td>
+                  <td>in</td>
+                  <td>libero</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="js\jquery.bsPhotoGallery.js"></script>
+    <link href="css\jquery.bsPhotoGallery.css" rel="stylesheet">
+  </body>
+
+</html>

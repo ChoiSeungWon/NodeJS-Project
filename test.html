@@ -1,0 +1,24 @@
+function generateChartData() {
+    var chartData = [];
+    var firstDate = new Date();
+    firstDate.setDate(firstDate.getDate() - 100);
+
+    for (var i = 0; i < 100; i++) {
+        // we create date objects here. In your data, you can have date strings
+        // and then set format of your dates using chart.dataDateFormat property,
+        // however when possible, use date objects, as this will speed up chart rendering.
+        var newDate = new Date(firstDate);
+        newDate.setDate(newDate.getDate() + i);
+        var visits = Math.round(Math.sin(i * 5) * i);
+        var hits = Math.round(Math.random() * 80) + 500 + i * 3;
+        var views = Math.round(Math.random() * 6000) + i * 4;
+
+        chartData.push({
+            date: newDate,
+            visits: visits,
+            hits: hits,
+            views: views
+        });
+    }
+    return chartData;
+}

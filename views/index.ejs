@@ -1,0 +1,367 @@
+<!doctype html>
+<html>
+  <head>
+    <title>chart ex</title>
+    <meta charset='utf-8'>
+    <style>
+    #chartdiv {
+    	width	: 100%;
+    	height	: 500px;
+    }
+
+    /*
+ * Base structure
+ */
+
+/* Move down content because we have a fixed navbar that is 50px tall */
+body {
+  padding-top: 50px;
+}
+
+
+/*
+ * Global add-ons
+ */
+
+.sub-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+/*
+ * Top navigation
+ * Hide default border to remove 1px line.
+ */
+.navbar-fixed-top {
+  border: 0;
+}
+
+/*
+ * Sidebar
+ */
+
+/* Hide for mobile, show later */
+.sidebar {
+  display: none;
+}
+@media (min-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 51px;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    display: block;
+    padding: 20px;
+    overflow-x: hidden;
+    overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+    background-color: #f5f5f5;
+    border-right: 1px solid #eee;
+  }
+}
+
+/* Sidebar navigation */
+.nav-sidebar {
+  margin-right: -21px; /* 20px padding + 1px border */
+  margin-bottom: 20px;
+  margin-left: -20px;
+}
+.nav-sidebar > li > a {
+  padding-right: 20px;
+  padding-left: 20px;
+}
+.nav-sidebar > .active > a,
+.nav-sidebar > .active > a:hover,
+.nav-sidebar > .active > a:focus {
+  color: #fff;
+  background-color: #428bca;
+}
+
+
+/*
+ * Main content
+ */
+
+.main {
+  padding: 20px;
+}
+@media (min-width: 768px) {
+  .main {
+    padding-right: 40px;
+    padding-left: 40px;
+  }
+}
+.main .page-header {
+  margin-top: 0;
+}
+
+
+/*
+ * Placeholder dashboard ideas
+ */
+
+.placeholders {
+  margin-bottom: 30px;
+  text-align: center;
+}
+.placeholders h4 {
+  margin-bottom: 0;
+}
+.placeholder {
+  margin-bottom: 20px;
+}
+.placeholder img {
+  display: inline-block;
+  border-radius: 50%;
+}
+
+
+    </style>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://www.amcharts.com/lib/3/amcharts.js"></script>
+    <script src="https://www.amcharts.com/lib/3/serial.js"></script>
+    <script src="https://www.amcharts.com/lib/3/plugins/export/export.min.js"></script>
+    <link rel="stylesheet" href="https://www.amcharts.com/lib/3/plugins/export/export.css" type="text/css" media="all" />
+    <script src="https://www.amcharts.com/lib/3/themes/light.js"></script>
+
+    <script>
+  var chart = AmCharts.makeChart("chartdiv", {
+    "type": "serial",
+    "theme": "light",
+    "marginRight":80,
+    "autoMarginOffset":20,
+    "dataDateFormat": "YYYY-MM",
+    "dataProvider": [{
+        "date": "2012-01",
+        "value": 18
+    }, {
+        "date": "2012-02",
+        "value": 16
+    }, {
+        "date": "2012-03",
+        "color":"#CC0000",
+        "value": 15
+    }, {
+        "date": "2012-04",
+        "value": 12
+    }, {
+        "date": "2012-05",
+        "value": 14
+    }, {
+        "date": "2012-06",
+        "value": 11
+    }, {
+        "date": "2012-07",
+        "value": 6
+    }, {
+        "date": "2012-08",
+        "value": 7
+    }, {
+        "date": "2012-09",
+        "value": 9
+    }, {
+        "date": "2012-10",
+        "value": 13
+    }, {
+        "date": "2012-11",
+        "value": 15
+    }, {
+        "date": "2012-12",
+        "color":"#CC0000",
+        "value": 19
+    }],
+    "valueAxes": [{
+        "axisAlpha": 0,
+        "guides": [{
+            "fillAlpha": 0.1,
+            "fillColor": "#888888",
+            "lineAlpha": 0,
+            "toValue": 16,
+            "value": 10
+        }],
+        "position": "left",
+        "tickLength": 0
+    }],
+    "graphs": [{
+        "balloonText": "[[category]]<br><b><span style='font-size:14px;'>value:[[value]]</span></b>",
+        "bullet": "round",
+        "dashLength": 3,
+        "colorField":"color",
+        "valueField": "value"
+    }],
+    "trendLines": [{
+        "finalDate": "2012-01-11 12",
+        "finalValue": 19,
+        "initialDate": "2012-01-02 12",
+        "initialValue": 10,
+        "lineColor": "#CC0000"
+    }, {
+        "finalDate": "2012-01-22 12",
+        "finalValue": 10,
+        "initialDate": "2012-01-17 12",
+        "initialValue": 16,
+        "lineColor": "#CC0000"
+    }],
+    "chartScrollbar": {
+        "scrollbarHeight":2,
+        "offset":-1,
+        "backgroundAlpha":0.1,
+        "backgroundColor":"#888888",
+        "selectedBackgroundColor":"#67b7dc",
+        "selectedBackgroundAlpha":1
+    },
+    "chartCursor": {
+        "fullWidth":true,
+        "valueLineEabled":true,
+        "valueLineBalloonEnabled":true,
+        "valueLineAlpha":0.5,
+        "cursorAlpha":0
+    },
+    "categoryField": "date",
+    "categoryAxis": {
+        "parseDates": true,
+        "axisAlpha": 0,
+        "gridAlpha": 0.1,
+        "minorGridAlpha": 0.1,
+        "minorGridEnabled": true
+    },
+    "export": {
+        "enabled": true
+     }
+});
+
+chart.addListener("dataUpdated", zoomChart);
+
+function zoomChart(){
+    chart.zoomToDates(new Date(2012, 0, 2), new Date(2012, 0, 13));
+}
+</script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script>
+$(function () {
+    Highcharts.chart('container', {
+        chart: {
+            type: 'line'
+        },
+        title: {
+            text: 'DEVICE 별 YIELD TREND'
+        },
+        subtitle: {
+            text: 'Source: WorldClimate.com'
+        },
+        xAxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        },
+        yAxis: {
+            title: {
+                text: 'Temperature (°C)'
+            }
+        },
+        plotOptions: {
+            line: {
+                dataLabels: {
+                    enabled: true
+                },
+                enableMouseTracking: false
+            }
+        },
+        series: [{
+            name: 'Tokyo',
+            data: [7.0, 6.9, 9.5, 14.5, 18.4, 21.5, 25.2, 26.5, 23.3, 18.3, 13.9, 9.6]
+        }, {
+            name: 'London',
+            data: [3.9, 4.2, 5.7, 8.5, 11.9, 15.2, 17.0, 16.6, 14.2, 10.3, 6.6, 4.8]
+        }]
+    });
+});
+
+</script>
+
+  </head>
+  <body>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container-fluid">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Multi Trend</a>
+      </div>
+
+      <!-- Collect the nav links, forms, and other content for toggling -->
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <div id="login">
+        <form class="navbar-form navbar-left" role="search" onsubmit="return false">
+          <div class="form-group">
+            <input type="text" id="chat_id" class="form-control" placeholder="ID 입력">
+          </div>
+          <button type="button" class="btn btn-primary" id="connectButton">접속하기</button>
+        </form>
+      </div>
+      <div id="logout">
+      <div class="navbar-form navbar-left">
+        <input type="text" id="id" class="form-control" readonly>
+        <button type="button" class="btn btn-primary" id="logout">로그아웃</button>
+      </div>
+    </div>
+      </div><!-- /.navbar-collapse -->
+    </div><!-- /.container-fluid -->
+  </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
+            <li><a href="#">Reports</a></li>
+            <li><a href="#">Analytics</a></li>
+            <li><a href="#">Export</a></li>
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li><a href="">Nav item</a></li>
+            <li><a href="">Nav item again</a></li>
+            <li><a href="">One more nav</a></li>
+            <li><a href="">Another nav item</a></li>
+            <li><a href="">More navigation</a></li>
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li><a href="">Nav item again</a></li>
+            <li><a href="">One more nav</a></li>
+            <li><a href="">Another nav item</a></li>
+          </ul>
+          <!-- <br/>
+          <ul class="nav nav-sidebar">
+            <li>
+                <a href="#">
+                  Highcharts
+                </a>
+            </li>
+          </ul> -->
+          <!-- <ul class="nav nav-sidebar-list-inline">
+              <li>
+                <a href="#">Name : </a>
+              </li>
+              <li>
+              <input type="text" class="form-control" id="exampleInputName2" placeholder="Jane Doe">
+              </li>
+          </ul>
+         -->
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h1 class="page-header">페이지제목</h1>
+          <div class="row placeholders">
+            <div id="chartdiv"></div>
+          </div>
+        <div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+      </div>
+      </div>
+    </div>
+  </body>
+</html>

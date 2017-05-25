@@ -1,0 +1,38 @@
+{
+  "name": "server_side_javascript",
+  "version": "1.0.0",
+  "description": "server_side_javascript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.1.2",
+    "body-parser": "^1.15.2",
+    "chart.js": "^2.4.0",
+    "connect-mssql": "^1.5.0",
+    "cookie-parser": "^1.4.3",
+    "ejs": "^2.5.3",
+    "express": "^4.14.0",
+    "express-session": "^1.14.2",
+    "jade": "^1.11.0",
+    "md5": "^2.2.1",
+    "mssql": "^3.3.0",
+    "mssql-session-store": "^1.0.0",
+    "node-mssql": "0.0.1",
+    "node-qsb": "0.0.4",
+    "orientjs": "^2.2.3",
+    "passport": "^0.3.2",
+    "passport-facebook": "^2.1.1",
+    "passport-local": "^1.0.0",
+    "pbkdf2-password": "^1.2.1",
+    "session-file-store": "^1.0.0",
+    "sha256": "^0.2.0",
+    "socket.io": "^1.7.2",
+    "squel": "^5.5.0",
+    "underscore": "^1.8.3",
+    "winston": "^2.3.0"
+  }
+}
